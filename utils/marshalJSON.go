@@ -14,7 +14,6 @@ func MarshalJSON(m CustomMap) ([]byte, error) {
 	result := make(CustomMap)
 	for key, value := range m {
 		sliceKey := strings.Split(key, "/")
-		// fmt.Printf("%s: %s\n", "sliceKey", sliceKey)
 		result = mapJSON(result, sliceKey, value)
 	}
 	// Marshal the result map to JSON

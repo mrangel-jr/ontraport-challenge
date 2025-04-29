@@ -65,6 +65,16 @@ func TestUnmarshalJSON(t *testing.T) {
 			input:    []byte(`null`),
 			expected: map[string]interface{}{},
 		},
+		{
+			name:  "Nested JSON with objects inside array",
+			input: []byte(`{"one": {"two": 3, "four": [{"five": 6}, {"seven": 8}, {"nine": 10}]}}`),
+			expected: map[string]interface{}{
+				"one/four/0/five":  returnFloat64(6),
+				"one/four/1/seven": returnFloat64(8),
+				"one/four/2/nine":  returnFloat64(10),
+				"one/two":          returnFloat64(3),
+			},
+		},
 	}
 
 	for _, test := range tests {

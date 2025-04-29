@@ -17,23 +17,23 @@ func UnmarshalJSON(input []byte) (CustomMap, error) {
 	result := make(CustomMap)
 	// Example of how to access the data
 	for key, value := range data {
-		if nestedCustomMap, ok := value.(map[string]interface{}); ok {
-			nestedMap(nestedCustomMap, &result, key)
-		} else {
-			setValue(key, value, &result)
-		}
+		callMapIdentification(value, &result, key)
 	}
 	return result, nil
+}
+
+func callMapIdentification(value interface{}, result *CustomMap, key string) {
+	if nestedCustomMap, ok := value.(map[string]interface{}); ok {
+		nestedMap(nestedCustomMap, result, key)
+	} else {
+		setValue(key, value, result)
+	}
 }
 
 func nestedMap(nestedCustomMap CustomMap, result *CustomMap, keyResult string) {
 	for key, value := range nestedCustomMap {
 		key = fmt.Sprintf("%s/%s", keyResult, key)
-		if nested, ok := value.(map[string]interface{}); ok {
-			nestedMap(nested, result, key)
-		} else {
-			setValue(key, value, result)
-		}
+		callMapIdentification(value, result, key)
 	}
 }
 
@@ -45,8 +45,9 @@ func setValue(key string, value interface{}, result *CustomMap) {
 		(*result)[key] = value
 	case []interface{}:
 		for i, v := range value {
+			// Check if the value is a map
 			key := fmt.Sprintf("%s/%d", key, i)
-			(*result)[key] = v
+			callMapIdentification(v, result, key)
 		}
 	default:
 		(*result)[key] = value
